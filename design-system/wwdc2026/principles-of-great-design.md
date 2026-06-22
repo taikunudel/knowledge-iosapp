@@ -41,3 +41,9 @@ Maps directly onto existing project rules: forgiveness (do/catch + rollback save
 familiarity/consistency (native iOS 26/27 idioms, `LiquidGlass*` modifiers), simplicity
 (the "clear design", removed knobs), and craft (fixed `MacroPalette` identity, gesture
 polish). Use this as the yardstick when judging a new UI surface.
+
+## Applied in Nutritionist (2026-06-22)
+**Responsibility** — `CapturedFoodCard` ([ContentView.swift](Nutritionist/ContentView.swift))
+now shows an "✨ AI estimate. Set the portion to match what you actually ate." disclaimer
+under the portion stepper, so an AI-guessed calorie/macro number isn't mistaken for a
+measurement (anticipate harm, add disclaimers).

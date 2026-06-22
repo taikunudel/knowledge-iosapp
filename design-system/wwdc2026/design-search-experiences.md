@@ -52,3 +52,11 @@ Always show a considered empty state so users don't wonder whether search ran: u
 0:00 Intro · 1:39 Search-field core elements · 2:52 Patterns & placement · 10:30 Best
 practices (suggestions, filters, tokens) · 15:20 Next steps. Related: WWDC25 "Get to know
 the new design system", "Meet Liquid Glass".
+
+## Applied in Nutritionist (2026-06-22)
+The **Past Food / Library** screen (`FoodCardLibraryView`,
+[ContentView.swift](Nutritionist/ContentView.swift)) now has `.searchable` filtering by name
+(`filteredCards`), a no-results `ContentUnavailableView.search(text:)`, and **top**
+(`.navigationBarDrawer(displayMode: .always)`) placement — iOS 26+ defaults `.searchable` to
+a bottom field that collides with the app's floating chat bar. The Trends nutrient-list
+search is still a future enhancement.

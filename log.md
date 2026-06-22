@@ -9,3 +9,7 @@
   sessions: Principles of Great Design (250), Communicate Your Brand Identity on iOS (251),
   Design Intuitive Search Experiences (292). Each page pins its canonical Apple link so the
   source stays reachable when it's richer than the summary.
+* 2026-06-22 — Applied 3 WWDC26 design changes to the app and recorded them under each
+  `design-system/wwdc2026/` page's "Applied in Nutritionist" section: (1) Dynamic Type first
+  pass on the food log, (2) an AI-estimate disclaimer on the captured food card, (3)
+  `.searchable` on Past Food / Library. All build- and screenshot-verified on the iOS 27 sim.

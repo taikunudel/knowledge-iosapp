@@ -44,3 +44,12 @@ This is the design rationale behind several locked project rules: the **MUJI acc
 palette + fixed `MacroPalette`** identity (content-layer color, used sparingly), keeping
 navigation/composer on standard `LiquidGlass*` chrome (UI layer), and SF Symbols for
 glyphs. When adding brand flourish, put it in the content layer, not the nav/composer.
+
+## Applied in Nutritionist (2026-06-22)
+**Typography → Dynamic Type (first pass).** The food log now scales with the user's text
+size: `PlainDesignFoodRow` food name → `.body` (wraps to 2 lines, no truncation) and meta →
+`.caption`; `plainMealSection` headers → `.subheadline`
+([CalendarView.swift](Nutritionist/Views/CalendarView.swift)). `CapturedFoodCard` already
+used semantic styles. Verified at the largest accessibility text size. **NOT yet converted**
+(a fuller sweep remains): the globe/trend `Canvas` numerals (geometric, fixed by design) and
+assorted `.system(size:)` chrome.
