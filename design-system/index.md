@@ -2,6 +2,9 @@
 
 Design, UI, and visual-language rules for the Nutritionist app.
 
+## Subfolders
+* [wwdc2026/](wwdc2026/) - distilled iOS-design guidance from WWDC 2026 (iOS 27), each page linking its canonical Apple source
+
 ## Documents
 
 * [Always Refer to the iOS 26 Design Guide](ios26-design-guide.md) - Consult Apple's iOS 26 / liquid-glass guidance for any UI surface, target the iOS 27 runtime, and use the project's native-glass modifiers without manual borders.
