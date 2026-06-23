@@ -13,3 +13,10 @@
   `design-system/wwdc2026/` page's "Applied in Nutritionist" section: (1) Dynamic Type first
   pass on the food log, (2) an AI-estimate disclaimer on the captured food card, (3)
   `.searchable` on Past Food / Library. All build- and screenshot-verified on the iOS 27 sim.
+* 2026-06-23 — Read the remaining WWDC26 design sources and added 5 pages to
+  `design-system/wwdc2026/`: What's New in SwiftUI (269), Modernize Your UIKit App (278),
+  Liquid Glass (technology overview + SOTU 102), HIG map + iOS 27 deltas (HIG + What's new —
+  Design), and Apple Design Resources (+ 9to5Mac). Two SPA pages (HIG landing, Liquid Glass
+  overview) were JS-blocked for WebFetch/curl and read via the Chrome MCP (real browser).
+  Each page pins its canonical link(s); two pure link-hubs (videos index, WWDC26 design
+  guide) are recorded as references in the subfolder index, not mirrored.
