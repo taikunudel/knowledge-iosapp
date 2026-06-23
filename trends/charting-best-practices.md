@@ -13,6 +13,11 @@ sources:
   - "https://developer.apple.com/design/human-interface-guidelines/charts"
   - "https://developer.apple.com/videos/play/wwdc2025/313/"
   - "https://developer.apple.com/videos/play/wwdc2026/102/"
+  - "https://developer.apple.com/documentation/swiftui/view/chartscrollableaxes(_:)"
+  - "https://developer.apple.com/videos/play/wwdc2023/10037/"
+  - "https://developer.apple.com/documentation/swiftui/view/accessibilitychartdescriptor(_:)"
+  - "https://developer.apple.com/videos/play/wwdc2021/10122/"
+  - "https://support.apple.com/guide/stocks/change-the-chart-display-stc4cfc704df/mac"
 ---
 
 # Charting / Graphing Data — Best Practices (Apple)
@@ -44,6 +49,18 @@ sources:
 
 ## Interactive highlight (WWDC26 — SOTU)
 - The current direction: **subtle, interactive highlights that respond as people scroll/scrub** a chart (the Tide Guide example), so a static chart becomes explorable without clutter. Pairs with the 2026 HIG scroll-edge-effect refinements for legibility as content scrolls under bars.
+
+## Zoom, scroll & scrub — interaction
+- **Pinch-to-zoom is NOT the iOS idiom for charts.** Apple's own data apps (Health, Stocks) don't pinch-zoom a chart; they use a discrete **range selector** + horizontal scroll + scrub-to-inspect.
+- **Change the window with a range selector, not free zoom.** A segmented control of preset ranges ([Apple Stocks](https://support.apple.com/guide/stocks/change-the-chart-display-stc4cfc704df/mac): 1D/1W/1M/3M/6M/1Y/ALL; for daily nutrition: **7D / 30D / 90D / All**). Highlight the active range; keep it consistent across charts.
+- **Scroll natively — don't hand-roll a pan gesture.** `.chartScrollableAxes(.horizontal)` + `.chartXVisibleDomain(length:)` (the visible window) + `.chartScrollPosition(x:)` (bindable; set initial position to the latest data, read/restore on change) + `.chartScrollTargetBehavior(.valueAligned(…))` for snapping + momentum. iOS 17+ ([chartScrollableAxes](https://developer.apple.com/documentation/swiftui/view/chartscrollableaxes(_:)), [WWDC23 — Explore pie charts and interactivity in Swift Charts](https://developer.apple.com/videos/play/wwdc2023/10037/)); **unchanged through iOS 26/27** — there is no new 2D scroll/zoom API in WWDC25/26.
+- **Drag / long-press over the chart = scrub to inspect** (show the point's date + value), as Stocks does — not pan. Use `.chartXSelection(value:)` (iOS 17+).
+
+## Accessibility — Audio Graphs
+- Swift Charts gives VoiceOver + an **Audio Graph** (plays a pitch per data point, modulated by the y value) largely automatically, but enrich it:
+  - Add per-mark `.accessibilityLabel(…)` / `.accessibilityValue(…)` so each bar reads as "date, value".
+  - For the full Audio Graph detail page, provide an **`AXChartDescriptor`** via a type conforming to `AXChartDescriptorRepresentable`, attached with **`.accessibilityChartDescriptor(_:)`** — gives VoiceOver's "Audio Graph" rotor a summary, axes, and series.
+- Links: [accessibilityChartDescriptor](https://developer.apple.com/documentation/swiftui/view/accessibilitychartdescriptor(_:)) · [WWDC21 — Bring accessibility to charts in your app](https://developer.apple.com/videos/play/wwdc2021/10122/).
 
 ## Applied to Nutritionist Trends — current gaps
 The per-nutrient bar charts live in

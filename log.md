@@ -27,3 +27,7 @@
   (HIG Charting data + WWDC25 313 + WWDC26 SOTU, canonical links pinned) plus the concrete
   gaps in our Trends charts (no accessibility/Audio Graph, no scrub interactivity, no
   descriptive takeaway, weak empty state).
+* 2026-06-23 — Expanded trends/charting-best-practices.md with the zoom/scroll interaction
+  best practice (pinch-zoom isn't idiomatic; use a range selector + native
+  .chartScrollableAxes scroll + .chartXSelection scrub) and the Audio Graph accessibility
+  recipe (accessibilityChartDescriptor / AXChartDescriptor), all with canonical links.
