@@ -23,3 +23,7 @@
 * 2026-06-23 — During the WWDC26 improvement run, recorded the food-log row
   swipe-to-delete rejection (conflicts with the horizontal date-swipe pager) in
   design-system/rejected-experiments.md so it isn't re-attempted.
+* 2026-06-23 — Added trends/charting-best-practices.md: Apple's chart best practices
+  (HIG Charting data + WWDC25 313 + WWDC26 SOTU, canonical links pinned) plus the concrete
+  gaps in our Trends charts (no accessibility/Audio Graph, no scrub interactivity, no
+  descriptive takeaway, weak empty state).
