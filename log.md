@@ -20,3 +20,6 @@
   overview) were JS-blocked for WebFetch/curl and read via the Chrome MCP (real browser).
   Each page pins its canonical link(s); two pure link-hubs (videos index, WWDC26 design
   guide) are recorded as references in the subfolder index, not mirrored.
+* 2026-06-23 — During the WWDC26 improvement run, recorded the food-log row
+  swipe-to-delete rejection (conflicts with the horizontal date-swipe pager) in
+  design-system/rejected-experiments.md so it isn't re-attempted.
