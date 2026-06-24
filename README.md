@@ -7,9 +7,9 @@ coding agents over MCP by [wiki-as-an-mcp](https://github.com/taikunudel/wiki-as
 
 ## 🌐 Live interactive graph
 
-[![Knowledge graph](graph-preview.png)](https://raw.githack.com/taikunudel/knowledge-iosapp/v1/graph.html)
+[![Knowledge graph](graph-preview.png)](https://taikunudel.github.io/knowledge-iosapp/)
 
-**▶ [Open the live, interactive graph »](https://raw.githack.com/taikunudel/knowledge-iosapp/v1/graph.html)**
+**▶ [Open the live, interactive graph »](https://taikunudel.github.io/knowledge-iosapp/)**
 
 Drag to pan, scroll or use the **Zoom** slider, and click any node to read its page in a side
 drawer (with its frontmatter, as tidy **Details** or **Raw** YAML). Dots are colored by page
