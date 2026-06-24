@@ -1,25 +1,28 @@
 #!/usr/bin/env python3
-"""Build a self-contained force-directed graph (graph.html) of an OKF knowledge base.
+"""Build a self-contained folder-clustered graph (graph.html) of an OKF knowledge base.
 
 Third root-level *view* over the bundle, alongside the catalog (index.md) and the
-chronicle (log.md): index.md shows parent->child containment; this shows the
-relationship fabric the text catalog hides -- tag co-occurrence and explicit links
-across folders, plus hub/orphan/tombstone signals.
+chronicle (log.md): index.md shows parent->child containment; this shows how pages
+RELATE across folders -- the bridges between topic areas that the text catalog hides.
 
-Honours OKF: reads only the .md files; index.md/log.md are reserved (no frontmatter)
-and are not nodes. Output is a single graph.html with inline CSS/JS (no deps, no build).
+READ-ONLY. This script never writes to a knowledge page; it only reads them. The wiki
+stays frozen. Output is a single graph.html with inline CSS/JS (no deps, no build).
+
+Layout: folder-clustered. Each top-level folder is a labeled bubble holding its pages;
+cross-folder relationships arc between bubbles, intra-folder ones stay inside. Spatial
+separation is what makes ~200 relationships readable instead of a hairball.
+
+Edge policy (rarity-weighted, IDF): a tag on every page is uninformative, exactly like
+search ranking. weight(A,B) = sum over shared tags of log(N/(1+freq(tag))). Edges whose
+score clears EDGE_MIN_TAG are drawn; weak "we're both in design" coincidences (score ~0)
+draw no line. Explicit [[wikilinks]] are always drawn distinctly.
+
 Re-run after editing pages:  python3 scripts/build_graph.py
-
-Edge policy (honesty over false precision):
-  - structural edges: tag co-occurrence. Two pages sharing >=1 tag get an edge whose
-    weight = #shared tags. This is the dense, real relationship fabric in this wiki.
-  - explicit edges: [[wikilinks]] between pages. Drawn distinctly (brighter, on top).
-  - supersession: NOT auto-extracted from prose (ambiguous). Tombstone/rejected pages
-    are flagged by filename+status (retired/rejected/reverse) and drawn with a cue.
 """
 from __future__ import annotations
 
 import json
+import math
 import re
 from collections import Counter
 from datetime import datetime
@@ -40,8 +43,7 @@ def split_frontmatter(text: str):
 
 
 def parse_kv(fm_lines):
-    """Tiny YAML reader for the flat frontmatter this bundle uses. Handles
-    `key: value`, `key: "quoted"`, `key: [a, b, c]`, and `key:` block lists."""
+    """Tiny YAML reader for the flat frontmatter this bundle uses."""
     out: dict[str, object] = {}
     i = 0
     while i < len(fm_lines):
@@ -54,7 +56,7 @@ def parse_kv(fm_lines):
             i += 1
             continue
         k, v = m.group(1), m.group(2).strip()
-        if v == "":                       # block list: following `- ...` lines
+        if v == "":
             items = []
             i += 1
             while i < len(fm_lines) and re.match(r"^\s*-\s+", fm_lines[i]):
@@ -62,7 +64,7 @@ def parse_kv(fm_lines):
                 i += 1
             out[k] = items
             continue
-        if v.startswith("[") and v.endswith("]"):                 # inline list
+        if v.startswith("[") and v.endswith("]"):
             out[k] = [x.strip().strip('"') for x in v[1:-1].split(",") if x.strip()]
         else:
             out[k] = v.strip('"')
@@ -84,19 +86,16 @@ def load_pages():
         tags = fm.get("tags", [])
         if isinstance(tags, str):
             tags = [t.strip() for t in tags.split(",") if t.strip()]
-        folder = rel.split("/")[0] if "/" in rel else "(root)"
-        # a subfolder like design-system/wwdc2026 -> keep both for the label
         parts = rel.split("/")
-        sub = "/".join(parts[:-1]) if len(parts) > 1 else ""
+        folder = parts[0] if len(parts) > 1 else "(root)"
         pages.append({
-            "id": rel[:-3],                       # strip .md -> page_id used by [[links]]
+            "id": rel[:-3],
             "file": rel,
             "title": str(fm.get("title", rel)).strip('"') or rel,
             "type": str(fm.get("type", "")).strip('"'),
             "status": str(fm.get("status", "")).strip('"'),
             "tags": [t.strip() for t in tags if t.strip()],
             "folder": folder,
-            "subfolder": sub,
             "body": body,
         })
     return pages
@@ -106,34 +105,43 @@ WIKI_RE = re.compile(r"\[\[([^\]]+)\]\]")
 
 
 def build_edges(pages):
+    """IDF-weighted shared-tag edges + explicit wikilinks. Returns (tag_edges, link_edges)
+    where each edge is (a_id, b_id, weight, [shared_tags])."""
     by_id = {p["id"]: p for p in pages}
-    # page_id lookup is case- and path-insensitive on the slug
     slug = {p["id"].split("/")[-1].lower(): p for p in pages}
+    N = len(pages)
+    tag_freq = Counter()
+    for p in pages:
+        for tg in set(p["tags"]):
+            tag_freq[tg] += 1
 
-    structural = Counter()   # (a,b) -> shared-tag count
+    def idf(tag):
+        return max(0.0, math.log(N / (1 + tag_freq[tag])))
+
+    raw = Counter()
+    shared_map = {}
     for i, a in enumerate(pages):
         aset = set(a["tags"])
         for b in pages[i + 1:]:
             shared = aset & set(b["tags"])
-            if shared:
-                structural[(a["id"], b["id"])] = len(shared)
+            if not shared:
+                continue
+            score = sum(idf(tg) for tg in shared)
+            if score >= EDGE_MIN_TAG:
+                raw[(a["id"], b["id"])] = score
+                shared_map[(a["id"], b["id"])] = sorted(shared)
 
-    explicit = set()
+    links = set()
     for a in pages:
         for target in WIKI_RE.findall(a["body"]):
             tgt = target.split("|")[0].split("#")[0].strip()
             b = by_id.get(tgt) or slug.get(tgt.lower())
             if b and b["id"] != a["id"]:
-                explicit.add((a["id"], b["id"]))
-    return structural, explicit
+                links.add((a["id"], b["id"]))
+    return raw, shared_map, links
 
 
-def is_tombstone(p):
-    name = p["file"].lower()
-    blob = (p["title"] + " " + p["status"]).lower()
-    return any(k in name or k in blob for k in ("retired", "rejected", "reverse"))
-
-
+EDGE_MIN_TAG = 1.5      # rarity score needed to draw a tag edge; weak folder-coincidences drop below this
 FOLDER_COLORS = {
     "design-system": "#5e9eff", "engineering": "#34c759", "food-entry": "#ff9f0a",
     "today": "#ff375f", "navigation": "#bf5af2", "trends": "#64d2ff",
@@ -142,70 +150,83 @@ FOLDER_COLORS = {
 TYPE_SHAPES = {"rule": "diamond", "decision": "circle", "guide": "square", "reference": "triangle"}
 
 
+def is_tombstone(p):
+    blob = (p["file"] + " " + p["title"] + " " + p["status"]).lower()
+    return any(k in blob for k in ("retired", "rejected", "reverse"))
+
+
 def build():
     pages = load_pages()
     pages.sort(key=lambda p: p["id"])
-    structural, explicit = build_edges(pages)
+    tag_edges, shared_map, link_edges = build_edges(pages)
+    by_id = {p["id"]: p for p in pages}
 
-    # node degree (hub signal)
+    # degree from kept edges (hub signal, for node sizing)
     deg = Counter()
-    for (a, b), w in structural.items():
-        deg[a] += w; deg[b] += w
-    for a, b in explicit:
-        deg[a] += 2; deg[b] += 2        # explicit links count more
+    for (a, b) in tag_edges:
+        deg[a] += 1; deg[b] += 1
+    for a, b in link_edges:
+        deg[a] += 1; deg[b] += 1
+
+    # folder clusters: order pages within each folder, keep folder member counts
+    folders = {}
+    for p in pages:
+        folders.setdefault(p["folder"], []).append(p["id"])
+    # stable, readable order: by folder size desc then name
+    folder_order = sorted(folders, key=lambda f: (-len(folders[f]), f))
 
     nodes = []
-    for p in pages:
-        d = deg.get(p["id"], 0)
-        nodes.append({
-            "id": p["id"],
-            "title": p["title"],
-            "folder": p["folder"],
-            "type": p["type"],
-            "tags": p["tags"],
-            "href": p["file"],
-            "degree": d,
-            "orphan": d == 0,
-            "tombstone": is_tombstone(p),
-            "color": FOLDER_COLORS.get(p["folder"], "#b0b0b0"),
-            "shape": TYPE_SHAPES.get(p["type"], "circle"),
-        })
+    for f in folder_order:
+        for pid in folders[f]:
+            p = by_id[pid]
+            nodes.append({
+                "id": pid,
+                "title": p["title"],
+                "short": pid.split("/")[-1],
+                "folder": f,
+                "type": p["type"],
+                "tags": p["tags"],
+                "href": p["file"],
+                "degree": deg.get(pid, 0),
+                "tombstone": is_tombstone(p),
+                "color": FOLDER_COLORS.get(f, "#b0b0b0"),
+                "shape": TYPE_SHAPES.get(p["type"], "circle"),
+                "fidx": folder_order.index(f),     # which cluster ring slot
+            })
 
     edges = []
-    for (a, b), w in structural.items():
-        edges.append({"source": a, "target": b, "weight": w, "kind": "tag"})
-    for a, b in explicit:
-        edges.append({"source": a, "target": b, "weight": 2, "kind": "link"})
+    for (a, b), w in tag_edges.items():
+        edges.append({"source": a, "target": b, "weight": round(w, 2),
+                      "kind": "tag", "via": shared_map[(a, b)]})
+    for a, b in link_edges:
+        edges.append({"source": a, "target": b, "weight": 4, "kind": "link", "via": ["[[wikilink]]"]})
 
-    out = render(nodes, edges, pages)
-    OUT.write_text(out, encoding="utf-8")
-    print(f"graph.html built: {len(nodes)} nodes, {len(edges)} edges "
-          f"({sum(1 for e in edges if e['kind']=='tag')} tag, "
-          f"{sum(1 for e in edges if e['kind']=='link')} link). "
-          f"Hubs: {[n['id'] for n in sorted(nodes,key=lambda x:-x['degree'])[:5]]}. "
-          f"Orphans: {[n['id'] for n in nodes if n['orphan']]}.")
+    OUT.write_text(render(nodes, edges, pages, folder_order, folders), encoding="utf-8")
+    cross = sum(1 for e in edges if by_id[e["source"]]["folder"] != by_id[e["target"]]["folder"])
+    intra = len(edges) - cross
+    print(f"graph.html built: {len(nodes)} nodes in {len(folder_order)} folders, "
+          f"{len(edges)} edges ({cross} cross-folder bridges, {intra} intra-folder). "
+          f"Hubs: {[n['id'] for n in sorted(nodes,key=lambda x:-x['degree'])[:5]]}.")
 
 
-# ---- self-contained HTML -------------------------------------------------------------
-# The HTML/JS body is a PLAIN string (no f-string) so JS template literals (`${...}`)
-# and CSS braces don't collide with Python formatting. Python values are injected via
-# unique @@PLACEHOLDER@@ tokens replaced at the end.
-def render(nodes, edges, pages):
-    data = {"nodes": nodes, "edges": edges}
-    payload = json.dumps(data, ensure_ascii=False)
-    n_pages = len(pages)
-    n_tag = sum(1 for e in edges if e["kind"] == "tag")
-    n_link = sum(1 for e in edges if e["kind"] == "link")
-    folders = sorted({p["folder"] for p in pages})
-    legend_folders = "".join(
-        f'<div class="legend-row"><span class="sw" style="background:{FOLDER_COLORS.get(f, "#b0b0b0")}"></span>{escape(f)}</div>'
-        for f in folders)
+# ---- self-contained HTML (plain string, @@TOKEN@@ injection) -------------------------
+def render(nodes, edges, pages, folder_order, folders):
+    payload = json.dumps({
+        "nodes": nodes,
+        "edges": edges,
+        "folders": [{"name": f, "count": len(folders[f]), "color": FOLDER_COLORS.get(f, "#b0b0b0")}
+                    for f in folder_order],
+    }, ensure_ascii=False)
+    n_cross = sum(1 for e in edges
+                  if next(n for n in nodes if n["id"] == e["source"])["folder"]
+                  != next(n for n in nodes if n["id"] == e["target"])["folder"])
+    n_intra = len(edges) - n_cross
     built = datetime.now().strftime("%Y-%m-%d %H:%M")
     html = _HTML_TEMPLATE
-    for token, val in (("@@PAYLOAD@@", payload), ("@@NPAGES@@", str(n_pages)),
-                       ("@@NEDGES@@", str(len(edges))), ("@@NTAG@@", str(n_tag)),
-                       ("@@NLINK@@", str(n_link)), ("@@BUILT@@", built),
-                       ("@@LEGEND_FOLDERS@@", legend_folders)):
+    for token, val in (("@@PAYLOAD@@", payload), ("@@NPAGES@@", str(len(pages))),
+                       ("@@NFOLDERS@@", str(len(folder_order))), ("@@NEDGES@@", str(len(edges))),
+                       ("@@NCROSS@@", str(n_cross)), ("@@NINTRA@@", str(n_intra)),
+                       ("@@BUILT@@", built)):
         html = html.replace(token, val)
     return html
 
@@ -217,24 +238,23 @@ _HTML_TEMPLATE = r"""<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nutritionist Wiki — Knowledge Graph</title>
 <style>
-  :root { --bg:#0d1117; --panel:#161b22; --ink:#c9d1d9; --dim:#8b949e; --line:#30363d;
-          --tag:#30363d99; --link:#58a6ff; }
+  :root { --bg:#0d1117; --panel:#161b22; --panel2:#1c2128; --ink:#c9d1d9; --dim:#8b949e;
+          --line:#30363d; --link:#58a6ff; }
   * { box-sizing:border-box; }
   html,body { margin:0; height:100%; background:var(--bg); color:var(--ink);
-           font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+           font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
   #app { display:flex; height:100vh; }
-  #side { width:300px; min-width:300px; background:var(--panel); border-right:1px solid var(--line);
-           padding:18px 18px 80px; overflow:auto; }
-  #side h1 { font-size:16px; margin:0 0 2px; }
+  #side { width:280px; min-width:280px; background:var(--panel); border-right:1px solid var(--line);
+           padding:16px 16px 80px; overflow:auto; }
+  #side h1 { font-size:15px; margin:0 0 2px; }
   #side .sub { color:var(--dim); font-size:12px; margin:0 0 14px; }
-  #side h2 { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--dim);
-           margin:18px 0 8px; border-bottom:1px solid var(--line); padding-bottom:4px; }
-  .legend-row { display:flex; align-items:center; gap:8px; font-size:12px; margin:5px 0; color:var(--ink);}
-  .legend-row .sw { width:14px; height:14px; flex:none; border:1px solid #0006; }
-  .legend-row.shape { color:var(--dim); }
+  #side h2 { font-size:10px; text-transform:uppercase; letter-spacing:.07em; color:var(--dim);
+           margin:16px 0 6px; }
+  .legend-row { display:flex; align-items:center; gap:8px; font-size:12px; margin:4px 0; }
+  .legend-row .sw { width:12px; height:12px; flex:none; border-radius:3px; }
   .stat { font-size:12px; color:var(--dim); margin:3px 0; }
   .stat b { color:var(--ink); }
-  #info { border-top:1px solid var(--line); margin-top:18px; padding-top:12px; font-size:12px;}
+  #info { border-top:1px solid var(--line); margin-top:14px; padding-top:12px; font-size:12px;}
   #info .empty { color:var(--dim); font-style:italic; }
   #info .t { font-weight:600; font-size:13px; color:#fff; }
   #info .meta { color:var(--dim); margin:2px 0 8px; }
@@ -243,14 +263,13 @@ _HTML_TEMPLATE = r"""<!DOCTYPE html>
             padding:1px 8px; font-size:11px; }
   #info a { color:var(--link); text-decoration:none; }
   #info a:hover { text-decoration:underline; }
-  #stage { flex:1; position:relative; overflow:hidden; }
-  canvas { display:block; cursor:grab; }
-  canvas:active { cursor:grabbing; }
+  #info .nbr { margin-top:6px; }
+  #info .nbr div { margin:2px 0; }
+  #info .nbr .via { color:var(--dim); font-size:11px; }
+  #stage { flex:1; position:relative; overflow:hidden; background:var(--bg); }
+  canvas { display:block; }
   #hint { position:absolute; left:12px; bottom:12px; color:var(--dim); font-size:11px;
-           background:#0d1117cc; padding:4px 8px; border-radius:6px; pointer-events:none;}
-  #filter { width:100%; background:#0d1117; border:1px solid var(--line); color:var(--ink);
-           border-radius:6px; padding:6px 9px; font-size:12px; margin-bottom:6px; }
-  .pill { font-size:10px; vertical-align:middle; opacity:.8; }
+           background:#0d1117cc; padding:5px 9px; border-radius:6px; pointer-events:none;}
 </style>
 </head>
 <body>
@@ -258,28 +277,28 @@ _HTML_TEMPLATE = r"""<!DOCTYPE html>
   <aside id="side">
     <h1>Nutritionist Wiki</h1>
     <p class="sub">Knowledge graph — relationships across folders</p>
-    <input id="filter" placeholder="Filter pages or tags…" autocomplete="off">
-    <div class="stat"><b>@@NPAGES@@</b> pages &middot; <b>@@NEDGES@@</b> edges</div>
-    <div class="stat">@@NTAG@@ tag co-occurrence &middot; @@NLINK@@ explicit links</div>
-    <div class="stat" style="color:#8b949e">built @@BUILT@@ &middot; <i>regenerate: python3 scripts/build_graph.py</i></div>
+    <div class="stat"><b>@@NPAGES@@</b> pages &middot; <b>@@NFOLDERS@@</b> folders &middot; <b>@@NEDGES@@</b> relationships</div>
+    <div class="stat">@@NCROSS@@ cross-folder bridges &middot; @@NINTRA@@ within-folder</div>
+    <div class="stat" style="color:#6e7681">built @@BUILT@@ &middot; <i>regenerate: python3 scripts/build_graph.py</i></div>
 
-    <h2>Folders (color)</h2>
-    @@LEGEND_FOLDERS@@
+    <h2>Folders (cluster color)</h2>
+    <div id="folderlegend"></div>
 
     <h2>Page type (shape)</h2>
-    <div class="legend-row shape">&#9670; rule &nbsp; &#9679; decision &nbsp; &#9632; guide &nbsp; &#9650; reference</div>
+    <div class="legend-row" style="color:var(--dim)"><span>&#9670; rule</span>
+      <span>&#9679; decision</span><span>&#9632; guide</span><span>&#9650; reference</span></div>
 
     <h2>Edge kind</h2>
-    <div class="legend-row"><span class="sw" style="background:#30363d99"></span>tag co-occurrence (shared tags)</div>
-    <div class="legend-row"><span class="sw" style="background:var(--link)"></span>explicit [[wikilink]]</div>
+    <div class="legend-row"><span class="sw" style="background:#58a6ff66"></span>shared distinguishing tag</div>
+    <div class="legend-row"><span class="sw" style="background:#f0883e"></span>explicit [[wikilink]]</div>
     <div class="legend-row"><span class="sw" style="background:#ff375f"></span>tombstone (retired/rejected)</div>
 
     <h2>Selection</h2>
-    <div id="info"><div class="empty">Click a node to inspect.</div></div>
+    <div id="info"><div class="empty">Click a node to see its relationships.</div></div>
   </aside>
   <main id="stage">
     <canvas id="cv"></canvas>
-    <div id="hint">drag nodes &middot; scroll to zoom &middot; click to select &middot; space=pause &middot; L=labels &middot; 0=reset</div>
+    <div id="hint">click a page to highlight its bridges &middot; scroll to zoom &middot; drag to pan</div>
   </main>
 </div>
 <script>
@@ -287,103 +306,138 @@ const DATA = @@PAYLOAD@@;
 const cv = document.getElementById('cv');
 const ctx = cv.getContext('2d');
 let W=0,H=0,DPR=1;
-function resize(){ DPR=window.devicePixelRatio||1; W=cv.clientWidth=cv.parentElement.clientWidth;
-  H=cv.clientHeight=cv.parentElement.clientHeight; cv.width=W*DPR; cv.height=H*DPR;
-  ctx.setTransform(DPR,0,0,DPR,0,0); }
-window.addEventListener('resize',()=>{resize();applyTransform();});
+function resize(){ DPR=window.devicePixelRatio||1; W=cv.parentElement.clientWidth;
+  H=cv.parentElement.clientHeight; cv.width=W*DPR; cv.height=H*DPR;
+  cv.style.width=W+'px'; cv.style.height=H+'px'; }
+window.addEventListener('resize',()=>{resize();layout();applyTransform();draw();});
 
-const nodes = DATA.nodes.map(n=>Object.assign({
-  x:W/2+(Math.random()-0.5)*W*0.6, y:H/2+(Math.random()-0.5)*H*0.6, vx:0, vy:0}, n));
-const idx = Object.fromEntries(nodes.map(n=>[n.id,n]));
-const edges = DATA.edges.map(e=>({source:idx[e.source], target:idx[e.target], ...e}))
+// ---- cluster layout: each folder is a bubble on a ring; pages inside it on a small ring ----
+const nodes = DATA.nodes.map(n=>({...n, x:0,y:0,vx:0,vy:0}));
+const byId = Object.fromEntries(nodes.map(n=>[n.id,n]));
+const folders = DATA.folders;
+const RING = Math.min(W,H)*0.34;            // folder ring radius
+const folderPos = {};
+function layout(){
+  const RING = Math.min(W,H)*0.34;
+  const cx=W/2, cy=H/2;
+  folders.forEach((f,i)=>{
+    const ang = (i/folders.length)*Math.PI*2 - Math.PI/2;
+    folderPos[f.name] = {x:cx+Math.cos(ang)*RING, y:cy+Math.sin(ang)*RING, ang};
+    // place member pages on a small ring inside the cluster
+    const mems = nodes.filter(n=>n.folder===f.name);
+    const rr = 22 + mems.length*4.5;
+    mems.forEach((m,j)=>{
+      const a = (j/Math.max(mems.length,1))*Math.PI*2 + folderPos[f.name].ang;
+      m.x = folderPos[f.name].x + Math.cos(a)*rr;
+      m.y = folderPos[f.name].y + Math.sin(a)*rr;
+      m.homeX=m.x; m.homeY=m.y; m.rr=rr; m.ang0=a;
+    });
+  });
+}
+// resolve edges to node objects
+const edges = DATA.edges.map(e=>({source:byId[e.source], target:byId[e.target], ...e}))
   .filter(e=>e.source&&e.target);
 
-// physics
-const REPEL=4200, LINK=0.012, CENTER=0.004, DAMP=0.86, MAXV=6;
-function step(){
-  for(const n of nodes){ let fx=0,fy=0;
-    for(const m of nodes){ if(m===n)continue; let dx=n.x-m.x,dy=n.y-m.y; let d2=dx*dx+dy*dy+0.01;
-      let f=REPEL/d2; fx+=dx/Math.sqrt(d2)*f; fy+=dy/Math.sqrt(d2)*f; }
-    fx+=(W/2-n.x)*CENTER; fy+=(H/2-n.y)*CENTER; n.fx=fx; n.fy=fy; }
-  for(const e of edges){ let dx=e.target.x-e.source.x, dy=e.target.y-e.source.y;
-    let d=Math.sqrt(dx*dx+dy*dy)||0.01; let want=70/Math.sqrt(e.weight);
-    let f=(d-want)*LINK*e.weight; let ux=dx/d,uy=dy/d;
-    e.source.fx+=ux*f; e.source.fy+=uy*f; e.target.fx-=ux*f; e.target.fy-=uy*f; }
-  for(const n of nodes){ if(n.pinned)continue; n.vx=(n.vx+n.fx)*DAMP; n.vy=(n.vy+n.fy)*DAMP;
-    n.vx=Math.max(-MAXV,Math.min(MAXV,n.vx)); n.vy=Math.max(-MAXV,Math.min(MAXV,n.vy));
-    n.x+=n.vx; n.y+=n.vy; }
-}
-function draw(){ ctx.clearRect(0,0,W,H);
-  for(const e of edges){ const hi=selected&&(e.source.id===selected.id||e.target.id===selected.id);
-    ctx.strokeStyle = e.kind==='link' ? (hi?'#79c0ff':'#58a6ff66') : (hi?'#c9d1d9':'#30363d99');
-    ctx.lineWidth = hi ? 1.6 : (e.kind==='link'?1.1:Math.min(1.4,0.4+e.weight*0.15));
-    ctx.beginPath(); ctx.moveTo(e.source.x,e.source.y); ctx.lineTo(e.target.x,e.target.y); ctx.stroke(); }
-  for(const n of nodes){ const r = 4+Math.min(7,Math.sqrt(n.degree)*1.6);
-    ctx.beginPath(); ctx.fillStyle = n.orphan?'#4a4a4a':n.color;
-    shape(ctx,n.shape,n.x,n.y,r); ctx.fill();
-    if(n.tombstone){ ctx.strokeStyle='#ff375f'; ctx.lineWidth=1.8; ctx.stroke(); }
-    if(selected===n){ ctx.strokeStyle='#fff'; ctx.lineWidth=2.2; ctx.stroke(); }
-    if(showLabels&&(n.degree>=3||selected===n||hovered===n)){ ctx.fillStyle='#c9d1d9';
-      ctx.font='11px -apple-system'; ctx.textAlign='center'; ctx.fillText(n.title.slice(0,34),n.x,n.y-r-4); }
-  } requestAnimationFrame(loop); }
-function shape(ctx,t,x,y,r){ ctx.save(); ctx.translate(x,y);
-  if(t==='diamond'){ ctx.moveTo(0,-r);ctx.lineTo(r,0);ctx.lineTo(0,r);ctx.lineTo(-r,0);ctx.closePath();}
-  else if(t==='square'){ ctx.beginPath();ctx.rect(-r*0.85,-r*0.85,r*1.7,r*1.7);}
-  else if(t==='triangle'){ ctx.beginPath();ctx.moveTo(0,-r);ctx.lineTo(r*0.92,r*0.8);ctx.lineTo(-r*0.92,r*0.8);ctx.closePath();}
-  else { ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2);} ctx.restore(); }
+// folder legend
+const fl = document.getElementById('folderlegend');
+fl.innerHTML = folders.map(f=>`<div class="legend-row"><span class="sw" style="background:${f.color}"></span>${f.name} <span style="color:var(--dim)">(${f.count})</span></div>`).join('');
 
-let selected=null,hovered=null,paused=false,showLabels=true;
-let zoom=1,panX=0,panY=0;
-function loop(){ if(!paused)step(); draw(); }
+let selected=null, hovered=null, zoom=1, panX=0, panY=0;
+let dragPan=false, lastX=0,lastY=0, didDrag=false;
+
 function applyTransform(){ ctx.setTransform(DPR*zoom,0,0,DPR*zoom,DPR*panX,DPR*panY); }
-function resetView(){ zoom=1;panX=0;panY=0; applyTransform(); }
 
-// interaction (screen-space hit test, world-space drag)
-function hit(sx,sy){ const wx=(sx-panX)/zoom, wy=(sy-panY)/zoom;
-  for(let i=nodes.length-1;i>=0;i--){ const n=nodes[i];
-    const dx=wx-n.x,dy=wy-n.y; if(dx*dx+dy*dy<=(7+Math.sqrt(n.degree)*2)**2) return n; } return null; }
-function screenPos(e){ const r=cv.getBoundingClientRect(); return [e.clientX-r.left, e.clientY-r.top]; }
-let drag=null;
-cv.addEventListener('pointerdown',e=>{ const [sx,sy]=screenPos(e); const n=hit(sx,sy);
-  if(n){ drag=n; n.pinned=true; selected=n; renderInfo(n); } else { selected=null; renderInfo(); } });
-cv.addEventListener('pointermove',e=>{ const [sx,sy]=screenPos(e);
-  if(drag){ drag.x=(sx-panX)/zoom; drag.y=(sy-panY)/zoom; drag.vx=0; drag.vy=0; }
-  else { hovered=hit(sx,sy); cv.style.cursor=hovered?'pointer':'grab'; } });
-cv.addEventListener('pointerup',()=>{ if(drag){ drag.pinned=false; drag=null; } });
-cv.addEventListener('pointercancel',()=>{ if(drag){ drag.pinned=false; drag=null; } });
-cv.addEventListener('wheel',e=>{ e.preventDefault(); const [sx,sy]=screenPos(e);
-  const f=e.deltaY<0?1.12:0.89;
-  const wx0=(sx-panX)/zoom, wy0=(sy-panY)/zoom;
-  zoom=Math.max(0.3,Math.min(3,zoom*f));
-  panX=sx-wx0*zoom; panY=sy-wy0*zoom; applyTransform(); }, {passive:false});
+function shapePath(t,x,y,r){ ctx.beginPath();
+  if(t==='diamond'){ ctx.moveTo(x,y-r);ctx.lineTo(x+r,y);ctx.lineTo(x,y+r);ctx.lineTo(x-r,y);ctx.closePath();}
+  else if(t==='square'){ ctx.rect(x-r*0.85,y-r*0.85,r*1.7,r*1.7);}
+  else if(t==='triangle'){ ctx.moveTo(x,y-r);ctx.lineTo(x+r*0.92,y+r*0.8);ctx.lineTo(x-r*0.92,y+r*0.8);ctx.closePath();}
+  else { ctx.arc(x,y,r,0,Math.PI*2);} }
 
-document.addEventListener('keydown',e=>{ if(e.key===' '){paused=!paused;}
-  if(e.key==='l'||e.key==='L')showLabels=!showLabels; if(e.key==='0')resetView(); });
+function conn(e,n){ return e.source.id===n.id||e.target.id===n.id; }
+function other(e,n){ return e.source.id===n.id?e.target:e.source; }
 
-const filterEl=document.getElementById('filter');
-filterEl.addEventListener('input',e=>{ const q=e.target.value.toLowerCase().trim();
-  filterSet = q? new Set(nodes.filter(n=> n.title.toLowerCase().includes(q)||
-    n.tags.some(t=>t.includes(q))||n.folder.includes(q)).map(n=>n.id)) : null;
-});
+function draw(){
+  ctx.setTransform(DPR,0,0,DPR,0,0); ctx.clearRect(0,0,W,H);
+  applyTransform();
+  // cluster bubbles
+  ctx.font='12px -apple-system';
+  for(const f of folders){ const p=folderPos[f.name]; if(!p)continue;
+    const mems=nodes.filter(n=>n.folder===f.name);
+    const rr=22+mems.length*4.5+26;
+    ctx.beginPath(); ctx.arc(p.x,p.y,rr,0,Math.PI*2);
+    ctx.fillStyle=f.color+'12'; ctx.fill();
+    ctx.strokeStyle=f.color+'55'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle=f.color; ctx.textAlign='center';
+    ctx.fillText(f.name, p.x, p.y-rr-6);
+  }
+  // edges
+  for(const e of edges){
+    const isLink=e.kind==='link';
+    const hi = selected && conn(e,selected);
+    if(isLink){ ctx.strokeStyle = hi?'#f0883e':'#f0883e66'; ctx.lineWidth=hi?2.0:1.3;
+                ctx.setLineDash([]); }
+    else { ctx.strokeStyle = hi?'#79c0ff':(selected?'#30363d66':'#58a6ff44');
+           ctx.lineWidth = hi?1.8:0.9; ctx.setLineDash(selected&&!hi?[3,3]:[]); }
+    ctx.beginPath(); ctx.moveTo(e.source.x,e.source.y); ctx.lineTo(e.target.x,e.target.y); ctx.stroke();
+  }
+  ctx.setLineDash([]);
+  // nodes
+  for(const n of nodes){ const r=5+Math.min(6,Math.sqrt(n.degree)*1.7);
+    const dim = selected && !edges.some(e=>conn(e,selected)&&other(e,selected).id===n.id) && n!==selected;
+    ctx.globalAlpha = dim?0.25:1;
+    shapePath(n.shape,n.x,n.y,r);
+    ctx.fillStyle=n.color; ctx.fill();
+    if(n.tombstone){ ctx.strokeStyle='#ff375f'; ctx.lineWidth=1.8; ctx.stroke(); }
+    if(selected===n){ ctx.strokeStyle='#fff'; ctx.lineWidth=2.4; ctx.stroke(); }
+    else if(hovered===n){ ctx.strokeStyle='#fff8'; ctx.lineWidth=1.6; ctx.stroke(); }
+    ctx.globalAlpha=1;
+    if(showLabels && (n.degree>=2||selected===n||hovered===n)){ ctx.fillStyle='#c9d1d9';
+      ctx.font='11px -apple-system'; ctx.textAlign='center'; ctx.fillText(n.short,n.x,n.y-r-5); }
+  }
+  requestAnimationFrame(()=>{}); // draw is on-demand
+}
+let showLabels=true;
+
+// interaction: click node = select; drag empty = pan; wheel = zoom
+function screenToWorld(sx,sy){ return {x:(sx-panX)/zoom, y:(sy-panY)/zoom}; }
+function hit(sx,sy){ const w=screenToWorld(sx,sy);
+  for(let i=nodes.length-1;i>=0;i--){ const n=nodes[i]; const r=6+Math.sqrt(n.degree)*2;
+    const dx=w.x-n.x,dy=w.y-n.y; if(dx*dx+dy*dy<=r*r) return n; } return null; }
+function sp(e){ const r=cv.getBoundingClientRect(); return [e.clientX-r.left,e.clientY-r.top]; }
+
+cv.addEventListener('pointerdown',e=>{ const [sx,sy]=sp(e); didDrag=false; const n=hit(sx,sy);
+  if(n){ selected=n; renderInfo(n); } else { dragPan=true; } lastX=sx;lastY=sy;
+  cv.setPointerCapture(e.pointerId); });
+cv.addEventListener('pointermove',e=>{ const [sx,sy]=sp(e);
+  if(dragPan){ panX+=sx-lastX; panY+=sy-lastY; lastX=sx;lastY=sy; didDrag=true; applyTransform(); draw(); }
+  else { const n=hit(sx,sy); if(n!==hovered){ hovered=n; cv.style.cursor=n?'pointer':'grab'; draw(); } } });
+cv.addEventListener('pointerup',e=>{ dragPan=false; cv.releasePointerCapture(e.pointerId); });
+cv.addEventListener('wheel',e=>{ e.preventDefault(); const [sx,sy]=sp(e);
+  const w=screenToWorld(sx,sy); const f=e.deltaY<0?1.12:0.89;
+  zoom=Math.max(0.3,Math.min(3.5,zoom*f)); panX=sx-w.x*zoom; panY=sy-w.y*zoom;
+  applyTransform(); draw(); }, {passive:false});
+document.addEventListener('keydown',e=>{ if(e.key==='l'||e.key==='L'){showLabels=!showLabels;draw();}
+  if(e.key==='0'){zoom=1;panX=0;panY=0;applyTransform();draw();}
+  if(e.key==='Escape'){selected=null;renderInfo();draw();} });
 
 function renderInfo(n){
   const el=document.getElementById('info');
-  if(!n){ if(selected) n=selected; else { el.innerHTML='<div class="empty">Click a node to inspect.</div>'; return; } }
-  const deg=edges.filter(e=>e.source.id===n.id||e.target.id===n.id).length;
-  const neigh=[...new Set(edges.filter(e=>e.source.id===n.id).map(e=>e.target.id)
-    .concat(edges.filter(e=>e.target.id===n.id).map(e=>e.source.id)))];
-  el.innerHTML = `<div class="t">${esc(n.title)}</div>
-    <div class="meta">${esc(n.folder)} &middot; ${esc(n.type)} ${n.orphan?'<span class=pill>&#9888; orphan</span>':''}${n.tombstone?'<span class=pill>&#9904; tombstone</span>':''}</div>
-    <div class="meta">degree ${n.degree} &middot; ${deg} edges &middot; ${neigh.length} neighbors</div>
+  if(!n){ el.innerHTML='<div class="empty">Click a node to see its relationships.</div>'; return; }
+  const es=edges.filter(e=>conn(e,n));
+  const byKind={link:[],tag:[]};
+  es.forEach(e=>{ byKind[e.kind].push({o:other(e,n),via:e.via||[]}); });
+  const rows = [...byKind.link.map(x=>`<div><b>${esc(x.o.short)}</b> <span class="via">— ${x.via.join(', ')}</span> <span style="color:#f0883e">wikilink</span></div>`),
+    ...byKind.tag.map(x=>`<div><b>${esc(x.o.short)}</b> <span class="via">— ${esc(x.o.folder)}</span> <span class="via">[${x.via.join(', ')}]</span></div>`)];
+  el.innerHTML=`<div class="t">${esc(n.title)}</div>
+    <div class="meta">${esc(n.folder)} &middot; ${esc(n.type)} ${n.tombstone?'<span style="color:#ff375f">tombstone</span>':''} &middot; ${es.length} relationships</div>
     <div class="tags">${n.tags.map(t=>`<span class=tag>${esc(t)}</span>`).join('')}</div>
-    <a href="${n.href}" target="_blank">open ${esc(n.id)}.md &nearr;</a>
-    ${neigh.length?'<div class="meta" style="margin-top:8px">linked: '+neigh.slice(0,12).map(id=>esc(id)).join(', ')+(neigh.length>12?'…':'')+'</div>':''}`;
+    <a href="${n.href}" target="_blank">open ${esc(n.short)}.md &nearr;</a>
+    <div class="nbr">${rows.join('')||'<div class="via">no relationships</div>'}</div>`;
 }
 function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})); }
 
 // init
-resize(); applyTransform(); loop();
-for(let i=0;i<60;i++)step();   // settle a little before first paint
+resize(); layout(); applyTransform(); draw();
 </script>
 </body>
 </html>
