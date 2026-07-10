@@ -3,13 +3,18 @@ type: reference
 id: "design-system/accent-palette"
 title: "Accent Palette — MUJI Natural Tones"
 description: "The MUJI-inspired natural accent palette, named color tokens, and the semantic status traffic-light that replace raw green/orange/red."
-status: stable
+status: superseded
 tags: [accent-palette, colors, muji, status-tones, design-tokens]
 created: 2026-06-22T00:00:00Z
-updated: 2026-06-22T00:00:00Z
+updated: 2026-07-10T00:00:00Z
 ---
 
 # Accent Palette — MUJI Natural Tones
+
+> ⚠️ **Superseded 2026-07-10** by the Caffeine palette — one hot accent
+> `#FF4A1C` on olive/paper neutrals; see [[caffeine-v5]]. MUJI tones remain
+> only inside the untouched legacy screens (Trends/Library/Settings) until
+> their Caffeine pass.
 
 *Established: 2026-05-26 (design system handoff)*
 

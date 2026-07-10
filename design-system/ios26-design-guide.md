@@ -3,13 +3,19 @@ type: guide
 id: "design-system/ios26-design-guide"
 title: "Always Refer to the iOS 26 Design Guide"
 description: "Consult Apple's iOS 26 / liquid-glass guidance for any UI surface, target the iOS 27 runtime, and use the project's native-glass modifiers without manual borders."
-status: stable
+status: superseded
 tags: [ios26, ios27, liquid-glass, design-guide, accessibility, runtime]
 created: 2026-06-22T00:00:00Z
-updated: 2026-06-22T00:00:00Z
+updated: 2026-07-10T00:00:00Z
 ---
 
 # Always Refer to the iOS 26 Design Guide
+
+> ⚠️ **Superseded 2026-07-10** by the Caffeine simplism era — see
+> [[caffeine-v5]]. The liquid-glass direction this page mandates is archived
+> at app tag `v4.0` / branch `liquid-glass-design`. Kept for history; the
+> iOS-27-runtime/build rules in here still apply, the glass styling rules do
+> not.
 
 *Established: 2026-05-20*
 

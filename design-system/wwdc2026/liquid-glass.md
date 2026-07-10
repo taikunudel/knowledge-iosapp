@@ -3,10 +3,10 @@ type: guide
 id: design-system/wwdc2026/liquid-glass
 title: "Liquid Glass — the design system (iOS 26 → second iteration in iOS 27)"
 description: "What Liquid Glass is, how to adopt it, its HIG design principles, and the WWDC26 second-iteration refinements (personalization slider, accessibility adaptation, sidebar/toolbar/icon changes, removal of the old-design opt-out)."
-status: stable
+status: superseded
 tags: [design, liquid-glass, materials, wwdc2026, ios, foundation]
 created: 2026-06-23T00:00:00Z
-updated: 2026-06-23T00:00:00Z
+updated: 2026-07-10T00:00:00Z
 resource: "https://developer.apple.com/documentation/technologyoverviews/liquid-glass"
 sources:
   - "https://developer.apple.com/documentation/technologyoverviews/liquid-glass"
@@ -14,6 +14,11 @@ sources:
 ---
 
 # Liquid Glass — the design system
+
+> ⚠️ **No longer the app's design system as of 2026-07-10** — the app pivoted
+> to the Caffeine simplism era ([[caffeine-v5]]), which is explicitly
+> anti-glass. This page stays as reference for the platform material itself
+> (system chrome still renders Liquid Glass) and for the archived v4.0 app.
 
 > **Canonical sources (richer than this page):**
 > [Liquid Glass — Technology Overviews](https://developer.apple.com/documentation/technologyoverviews/liquid-glass)

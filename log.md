@@ -36,3 +36,12 @@
   best practice (pinch-zoom isn't idiomatic; use a range selector + native
   .chartScrollableAxes scroll + .chartXSelection scrub) and the Audio Graph accessibility
   recipe (accessibilityChartDescriptor / AXChartDescriptor), all with canonical links.
+* 2026-07-10 — THE DESIGN PIVOT. Backed up the liquid-glass app as v4.0 (annotated tag
+  v4.0 "liquid-glass-design" + branch liquid-glass-design + MARKETING_VERSION 4.0, pushed)
+  and reimplemented the home flow against the Caffeine simplism handoff
+  (design/caffeine-design-system/ in the app repo; primary spec
+  templates/analyze-home/AnalyzeHome.dc.html). Added design-system/caffeine-v5.md as the
+  new canon (palette, bundled Space Grotesk / Hanken Grotesk / Space Mono, flat tab bar,
+  locked behaviors, verification, open items) and marked ios26-design-guide.md,
+  accent-palette.md, and wwdc2026/liquid-glass.md status: superseded with banners.
+  Phase 1 simulator-verified end-to-end (UITests + screenshots, both analysis outcomes).
