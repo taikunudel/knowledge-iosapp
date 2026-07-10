@@ -111,6 +111,14 @@ template; Dynamic Type support is a known regression deferred to a later pass
 - **Single fixed appearance** on home (paper + olive); the status bar flips to
   light text only while the olive panel covers the top
   (`statusBarOnOlive` binding → `preferredColorScheme`).
+- **Tap anywhere outside the composer exits it** (user 2026-07-10: "when text
+  bar is bought up by tapping on it, the keyboard will be up, then tap
+  anywhere else will exit the chatbar"): while `composerFocused`, the summary
+  + meals layers become a clear tap-catcher (no blur — anti-glass) that drops
+  focus; the meals ScrollView also drag-dismisses
+  (`scrollDismissesKeyboard(.interactively)`). Tapping the composer's own
+  surface does NOT dismiss. Guarded by
+  `testTapOutsideDismissesComposerKeyboard`.
 - Prototype chrome deliberately **not** implemented: fake 9:41/LTE status bar,
   fake home-indicator bar, CSS hovers, the hard-coded "87% CONFIDENCE" line
   (no confidence in `NutritionResponse` → footer omits it).
