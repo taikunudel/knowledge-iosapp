@@ -63,3 +63,13 @@
   card springs, 1:1 date-swipe pager math, globe spin physics, SceneKit idle spin). Source
   pages stay as history and are cited; caffeine-v5 + the folder index now point at it.
   Flagged one open item: CFPulseDot doesn't yet gate on Reduce Motion.
+* 2026-07-10 — Added the SPATIAL PROVENANCE motion rule (user: "where it is from, where it
+  is gone for every element") to design-system/motion.md canon with a per-element spec,
+  audited the v5 home against it (only the analysis panel + instant tab content complied;
+  everything else faded from nowhere), and implemented the fixes: detail/report drill in
+  from the trailing edge, picker drops from the top, day changes slide directionally
+  (leading=older/trailing=newer, layers clipped), logged rows land from the bottom out of
+  the collapsing panel, composer chips/notes emerge from the control row, checklist lines
+  print from the growth edge, and the tab underline now SLIDES via matchedGeometryEffect
+  while content stays instant (transaction-nil). Also fixed the flagged CFPulseDot
+  Reduce-Motion gap. Verified: 3 UI tests + 71 unit tests green after the changes.

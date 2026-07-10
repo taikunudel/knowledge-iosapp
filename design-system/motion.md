@@ -26,6 +26,33 @@ From the Caffeine handoff (`design/caffeine-design-system/project/tokens/motion.
 - **Honest, decelerating.** Objects move and settle like physical things —
   **no bounce, no overshoot, no spring.** A panel *rises*, a bar *fills*, a
   pressed surface *gives* (darken + 1 pt down-nudge).
+- **Spatial provenance — "where it is from, where it is gone," for every
+  element** (user rule, 2026-07-10). Every element that enters the screen
+  must arrive FROM the place that caused it, and every element that leaves
+  must exit TO a meaningful place (usually where it came from). A bare
+  `.opacity` fade from nowhere is a violation; fades may only *accompany* a
+  move. Per-element spec:
+  - **Analysis panel** ← rises from the composer (bottom) that spawned it;
+    exits back down.
+  - **Food detail / day report** ← drill-in from the TRAILING edge (the row
+    tap / the "VIEW DETAILED REPORT →" arrow points right); BACK exits to
+    the trailing edge.
+  - **Date picker** ← drops in from the TOP (its origin is the date switcher
+    at the top); exits back up.
+  - **Day change** ← directional page slide: navigating to an OLDER day, the
+    content enters from the LEADING edge (you moved back); to a NEWER day,
+    from the TRAILING edge. Arrows and swipes agree. (Supersedes the plain
+    cross-fade the first v5 pass shipped.)
+  - **Newly logged meal row** ← lands from the BOTTOM — it comes out of the
+    collapsing analysis panel.
+  - **Composer chips / LISTENING / notes** ← emerge from the composer's
+    control row (bottom, small travel) and leave the same way.
+  - **Checklist steps & fallback hops** ← print upward from the list's
+    growth edge (bottom, subtle).
+  - **Tab selection underline** ← SLIDES between items (it is the element
+    that travels); tab CONTENT stays instant (locked, see §4).
+  - Scope: v5 Caffeine surfaces. Legacy Trends/Library/Settings adopt this
+    on their own redesign pass.
 - **Short and purposeful.** Token durations 80–240 ms; the only long move is
   the analysis panel (550 ms) because it travels the whole screen.
 - **Instant where movement adds nothing.** The tab switch swaps content with
@@ -63,14 +90,27 @@ All in `Nutritionist/Views/Caffeine/` unless noted:
   driven by `panelCurve`/`panelCollapse`. The logged meal row is inserted
   ~480 ms after collapse starts so it lands as the panel clears (template
   rhythm).
-- **Analysis checklist** — step rows fade in (`Caffeine.fade`), active step
-  pulses (`CFPulseDot`), model row + fallback hop lines fade in the same way.
-- **Day change** (arrows, swipe, picker) — content fades via
-  `withAnimation(Caffeine.fade)`; the swipe itself commits at >40 pt
-  horizontal translation (no finger-tracking pager in v5 — deliberate
-  simplism; the v4 1:1 pager spec is archived in §5).
-- **Sub-screens** (detail / report / picker) — `.transition(.opacity)` with
-  `Caffeine.fade`; template's `fadeIn 0.25s`.
+- **Analysis checklist** — step rows, model row, and fallback hops print in
+  from the list's growth edge (`.move(edge: .bottom) + .opacity`,
+  `Caffeine.fade`); the active step pulses (`CFPulseDot`).
+- **Newly logged meal row** — lands from the BOTTOM (out of the collapsing
+  panel): row `.transition(.move(edge: .bottom) + .opacity)`, insert wrapped
+  in `withAnimation(Caffeine.fade)`.
+- **Composer chips / LISTENING / notes** — emerge from and leave toward the
+  control row below (`.move(edge: .bottom) + .opacity`, `Caffeine.ease` via
+  `.animation(value:)` on the composer).
+- **Tab underline** — SLIDES between items (`matchedGeometryEffect`,
+  `Caffeine.ease`); the content switch stays instant via
+  `.transaction { $0.animation = nil }` on the root content group.
+- **Day change** (arrows, swipe, picker) — directional page slide per the
+  provenance rule: day content (summary + meals, `.id(viewOffset)` +
+  `dayTransition`) enters from the LEADING edge going older, TRAILING going
+  newer; layers are `.clipped()` so slides stay inside their bands. The
+  swipe commits at >40 pt horizontal translation (no finger-tracking pager
+  in v5 — deliberate simplism; the v4 1:1 pager spec is archived in §5).
+- **Sub-screens** — detail/report drill in from the TRAILING edge and exit
+  back to it; the picker drops from the TOP and exits back up (each
+  `.move(edge:) + .opacity`, `zIndex(1)` over home).
 - **Bars** — `CFBar` animates width with `Caffeine.ease` when values change.
 - **Press feedback** — all buttons: instant darken + 1 pt down-nudge
   (physical "the surface gives"); no animation curve on purpose.
@@ -81,9 +121,9 @@ All in `Nutritionist/Views/Caffeine/` unless noted:
   (`scrollDismissesKeyboard(.interactively)`).
 - **Tab switch** — `CaffeineTabBar`: **instant** content swap, no transition
   (locked; crossfade caused mid-swap ghosting).
-- **Pulse dot Reduce Motion** — ⚠️ open item: `CFPulseDot` currently loops
-  regardless; add an `accessibilityReduceMotion` freeze on the next pass
-  (canon §1 requires it).
+- **Pulse dot Reduce Motion** — ✅ fixed 2026-07-10: `CFPulseDot` reads
+  `accessibilityReduceMotion` and holds steady at full presence (keep end
+  states, drop the travel).
 
 ## 4. Locked interaction rules & rejections (don't re-litigate)
 
