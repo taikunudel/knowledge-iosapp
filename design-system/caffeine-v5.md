@@ -71,7 +71,8 @@ template; Dynamic Type support is a known regression deferred to a later pass
 - `CaffeineDesign.swift` — tokens: palette, fonts, motion curves
   (panel `cubic-bezier(0.32,0.72,0,1)` 0.55s, standard ease 0.18s), `CFBar`,
   `CFMacroRow`, `CFMicroCell`, `CFStripes` (photo placeholder), button styles,
-  pulse dot.
+  pulse dot. **All motion/transition rules live in [[motion]]** — edit there,
+  not here.
 - `CaffeineHomeView.swift` — the AnalyzeHome screen: paper day-summary layer
   (date switcher, kcal display-56, calorie bar, macro bars), olive meals layer
   (time/name/kcal rows, hairlines), composer ("Describe, snap, or speak…",

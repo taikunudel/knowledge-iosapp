@@ -53,3 +53,13 @@
   "falling back to …" line per hop, and the result footer attributes the final model.
   ai/multi-provider-ai.md marked superseded with the full delta; chain order unit-tested
   (71 unit tests green) and the flow verified live against gemini-3.5-flash on the sim.
+* 2026-07-10 — Added design-system/motion.md as the SINGLE source of truth for animation/
+  transition knowledge (user: "merge them into a single one, so easy for me to edit").
+  Consolidates what was scattered across 16 pages: the Caffeine motion canon (no bounce/
+  spring/overshoot, decelerate, instant tab swap, Reduce Motion = keep end states), the
+  curve/duration token table mapped to CaffeineDesign.swift symbols, the live v5 animation
+  inventory (panel, fades, pulse, press physics, keyboard, bars), locked rules (trends bar
+  extends in place; no folding paper; no tab crossfade) and the archived v4 specs (drawer/
+  card springs, 1:1 date-swipe pager math, globe spin physics, SceneKit idle spin). Source
+  pages stay as history and are cited; caffeine-v5 + the folder index now point at it.
+  Flagged one open item: CFPulseDot doesn't yet gate on Reduce Motion.
