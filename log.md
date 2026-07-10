@@ -45,3 +45,11 @@
   locked behaviors, verification, open items) and marked ios26-design-guide.md,
   accent-palette.md, and wwdc2026/liquid-glass.md status: superseded with banners.
   Phase 1 simulator-verified end-to-end (UITests + screenshots, both analysis outcomes).
+* 2026-07-10 — Unified the AI model use (user): the catalog is exactly Gemini 3.5 Flash →
+  Gemini 3.1 Pro → Apple Intelligence, with that fixed fallback chain (ids verified against
+  the live Gemini ListModels API; OpenRouter/GLM removed — keys were never configured; the
+  Settings fallback-order editor is no longer consulted; on-device-by-default superseded).
+  The v5 analyzing panel now names the live model as its first bullet, prints an accent
+  "falling back to …" line per hop, and the result footer attributes the final model.
+  ai/multi-provider-ai.md marked superseded with the full delta; chain order unit-tested
+  (71 unit tests green) and the flow verified live against gemini-3.5-flash on the sim.

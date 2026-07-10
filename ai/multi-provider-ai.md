@@ -3,13 +3,34 @@ type: reference
 id: "ai/multi-provider-ai"
 title: Multi-Provider AI + Retry
 description: Reference for the multi-provider LLM client (Apple on-device, Gemini, OpenRouter, GLM), the model fallback chain, retry affordance, and per-card attribution.
-status: stable
+status: superseded
 tags: [ai, providers, foundation-models, fallback, retry]
 created: 2026-06-22T00:00:00Z
-updated: 2026-06-22T00:00:00Z
+updated: 2026-07-10T00:00:00Z
 ---
 
 # Multi-Provider AI + Retry
+
+> ⚠️ **Superseded 2026-07-10 — the model use is UNIFIED** (user: "i wanna
+> unify the model use… add a fall back mechanism, gemini 3.5 flash → gemini
+> 3.1 pro → apple intelligence"). `AIModelCatalog.all` is now exactly that
+> trio — native `gemini-3.5-flash` (GA) and `gemini-3.1-pro-preview` (ids
+> verified against the live ListModels API 2026-07-10) plus on-device — and
+> `modelChain` is the fixed canonical order via
+> `AIModelCatalog.chain(startingAt:onDeviceAvailable:)` (selected model
+> first; on-device dropped when unavailable and skipped for image requests).
+> Consequences: the OpenRouter/GLM options are REMOVED from the catalog
+> (their keys were never configured; the client code remains for history);
+> `AppSettings.modelFallbackOrder` and Settings' fallback-order editor are
+> **no longer consulted**; the 2026-06-17 "on-device by default" rule is
+> superseded — the default is now **Gemini 3.5 Flash** (the chain head). The
+> v5 analyzing panel names the live model ("MODEL — GEMINI 3.5 FLASH") and
+> prints one accent line per fallback hop ("… FAILED — FALLING BACK TO …")
+> via `AIManager.attemptModelLabel` / `fallbackHops`; the result footer
+> attributes the final model. Chain order is unit-tested
+> (`testChainCanonicalOrderFromFlash` and friends). Only the API key
+> location (`Nutritionist/Secrets.xcconfig`, git-ignored) and the
+> FoundationModels wrapper details below remain accurate.
 *Established: 2026-06-03. Implements the user's "let me choose different provider and model (like openclaw)" + "add a retry button" requests, following the conventions in "Elegant-Architecture Reference §3".*
 
 ### On-device AI — Apple Foundation Models (default when available)

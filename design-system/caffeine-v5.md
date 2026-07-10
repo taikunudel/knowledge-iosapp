@@ -122,6 +122,13 @@ template; Dynamic Type support is a known regression deferred to a later pass
 - Prototype chrome deliberately **not** implemented: fake 9:41/LTE status bar,
   fake home-indicator bar, CSS hovers, the hard-coded "87% CONFIDENCE" line
   (no confidence in `NutritionResponse` → footer omits it).
+- **Unified model routing (2026-07-10), shown explicitly in the panel:** the
+  chain is fixed — **Gemini 3.5 Flash → Gemini 3.1 Pro → Apple Intelligence**
+  (`AIModelCatalog.chain`; on-device dropped when unavailable / for photos).
+  The checklist's first bullet is "MODEL — <LIVE MODEL>", each fallback adds
+  an accent "↯ <X> FAILED — FALLING BACK TO <Y>" line, and the result footer
+  reads "AI ESTIMATE · <FINAL MODEL>". Don't re-add other providers to the
+  catalog without a new instruction.
 
 ## Verification (2026-07-10, iPhone 17 Pro / iOS 27 sim)
 
