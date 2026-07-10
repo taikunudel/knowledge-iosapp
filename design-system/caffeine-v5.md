@@ -64,6 +64,10 @@ template; Dynamic Type support is a known regression deferred to a later pass
 
 ## What phase 1 shipped (all in `Nutritionist/Views/Caffeine/`)
 
+- `CaffeineLogic.swift` — the pure logic behind the flow (CFDayTotals,
+  calorie shares, goal fraction, day labels/clamps, meal-by-hour, echo
+  truncation, meal naming, report footer), extracted from the views so
+  `NutritionistTests/CaffeineLogicTests.swift` (44 cases) can exercise it.
 - `CaffeineDesign.swift` — tokens: palette, fonts, motion curves
   (panel `cubic-bezier(0.32,0.72,0,1)` 0.55s, standard ease 0.18s), `CFBar`,
   `CFMacroRow`, `CFMicroCell`, `CFStripes` (photo placeholder), button styles,
@@ -113,7 +117,15 @@ template; Dynamic Type support is a known regression deferred to a later pass
 
 ## Verification (2026-07-10, iPhone 17 Pro / iOS 27 sim)
 
-`NutritionistUITests/CaffeineFlowUITests.swift` drives the whole flow and
+**Unit layer:** `NutritionistTests/CaffeineLogicTests.swift` — 44 tests over
+CFLogic + CFDayTotals + the nutrition-payload round-trip (macro-estimation
+fallback when the model omits macros, malformed/missing payload degradation,
+SwiftData persistence round-trip) + all 10 bundled font names resolving via
+`UIFont(name:)`. Whole unit suite: 63 tests, 0 failures. Note: the test
+target compiles its own copy of `FoodEntry.swift`, so tests must qualify the
+app type (`Nutritionist.FoodEntry`) when calling app-module APIs.
+
+**UI layer:** `NutritionistUITests/CaffeineFlowUITests.swift` drives the whole flow and
 drops numbered screenshots into `/tmp/caffeine_shots/`: seeded home, day nav
 (arrows + swipe), empty day, date picker, food detail, day report, composer
 typing (keyboard squeeze clips the summary layer — nothing under the status
