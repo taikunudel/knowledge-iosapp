@@ -123,6 +123,14 @@ template; Dynamic Type support is a known regression deferred to a later pass
 - Prototype chrome deliberately **not** implemented: fake 9:41/LTE status bar,
   fake home-indicator bar, CSS hovers, the hard-coded "87% CONFIDENCE" line
   (no confidence in `NutritionResponse` → footer omits it).
+- **FINAL REPORT v4 parity restored (2026-07-10 night):** the result card
+  carries the three locked v4 controls again — a **PORTION stepper**
+  (− / N× / +, 0.5×–10× step 0.5; displayed kcal/macros/micros scale live;
+  DONE logs scaled calories + already-scaled payload + `portionMultiplier`),
+  a **MEAL picker** (four flat chips, default by hour, the user always
+  picks), and **SAVE TO LIBRARY** (saves the BASE 1× card, idempotent per
+  analysis via `analysisID`; never the portion-scaled values). Guarded in
+  `testCaffeineHomeFlow` (stepper 1×→1.5×, Dinner pick, save presence).
 - **Unified model routing (2026-07-10), shown explicitly in the panel:** the
   chain is fixed — **Gemini 3.5 Flash → Gemini 3.1 Pro → Apple Intelligence**
   (`AIModelCatalog.chain`; on-device dropped when unavailable / for photos).

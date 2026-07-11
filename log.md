@@ -92,3 +92,16 @@
   evidence lines (✓/⚠/·), incl. an explicit "MACROS ESTIMATED FROM CALORIES" disclosure
   when the 45/30/25 fallback filled them. 11 new unit tests (82 total green); expansion
   verified live on the sim (37/37 fields, caffeine 130 mg from an oat latte).
+* 2026-07-10 (night, scheduled run) — Deepened the nutrition-verification workflow per the
+  scheduled job: CFNutritionAudit gained per-macro energy bounds (grams × Atwater factor ≤
+  kcal × 1.10), a per-serving plausibility screen against full-day reference caps (FDA DVs
+  for sodium 5000/potassium 4700 mg; NIH ODS adult ULs for 12 vitamins/minerals; B12,
+  thiamin, riboflavin, pantothenate, biotin, chromium uncapped — no established UL),
+  cholesterol ≤1000 mg and caffeine ≤ FDA 400 mg/day flags, a PLAUSIBILITY roll-up in the
+  recheck block, and a leading "VERDICT — PASS / REVIEW (N FLAGS)" line on every
+  checkpoint; all surfaced in the expandable checkpoint evidence. Documented in
+  ai/nutrition-verification.md with a full tolerances/caps table + bases. ALSO restored
+  the three locked v4 FINAL REPORT controls (portion stepper with live scaling + scaled
+  payload/multiplier on log, always-pick meal chips, idempotent SAVE TO LIBRARY of the
+  base card) — recorded in caffeine-v5.md. Tests: 95 unit (+13) and 4 UI green, success
+  branch live-verified (stepper 1×→1.5×, Dinner chip, checkpoint expansion, save button).
