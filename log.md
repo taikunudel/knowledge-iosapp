@@ -81,3 +81,14 @@
   on results (dismiss without logging — restores v4's "let user decide to add it or no").
   Guarded by testCancelAnalysisRestoresDraft + a NOT NOW assert in the main flow; all 4
   UI tests green, ✕ CLOSE stays above the fold on long results.
+* 2026-07-10 — Added ai/nutrition-verification.md (user: "dedicated knowledge for checking
+  the macro and micro nutrition… must be scientific… every checkpoint clickable to expand…
+  reuse the old app's macro/micro schema"). The v4 NutritionResponse 37-field schema (9
+  macros, 13 vitamins, 14 minerals, caffeine — with units and the >0-filtered accessors) is
+  reused as-is; a new pure CFNutritionAudit (CaffeineLogic.swift) runs the scientific
+  checks — Atwater 4/4/9 energy cross-check (±15% gate, stricter than FDA's 20%),
+  sat+mono+poly ≤ total fat, sugar+fiber ≤ carbs (0.5 g label slack), non-negativity,
+  schema coverage N/37 — and every analysis checkpoint now expands (+/−) to its real
+  evidence lines (✓/⚠/·), incl. an explicit "MACROS ESTIMATED FROM CALORIES" disclosure
+  when the 45/30/25 fallback filled them. 11 new unit tests (82 total green); expansion
+  verified live on the sim (37/37 fields, caffeine 130 mg from an oat latte).
