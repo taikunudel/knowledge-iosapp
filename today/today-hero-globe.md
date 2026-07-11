@@ -1,10 +1,10 @@
 ---
 type: decision
 id: "today/today-hero-globe"
-title: "Today Hero — Dotted Macro Globe + Legend"
+title: "v4 · Today Hero — Dotted Macro Globe + Legend"
 description: "The Today hero is a DottedGlobe beside a macro legend and Food-benefit row, replacing the retired water-washed progress strips."
 status: stable
-tags: [today, globe, hero, macros, design]
+tags: [today, globe, hero, macros, design, era-v4]
 created: 2026-06-22T00:00:00Z
 updated: 2026-06-22T00:00:00Z
 ---

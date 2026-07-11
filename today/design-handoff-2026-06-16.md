@@ -1,10 +1,10 @@
 ---
 type: decision
 id: "today/design-handoff-2026-06-16"
-title: "2026-06-16 Design Handoff Revamp (ui_kits/ios_app/index.html)"
+title: "v4 · 2026-06-16 Design Handoff Revamp (ui_kits/ios_app/index.html)"
 description: "Records the design-handoff revamp where the user iterated the MUJI / dotted-globe app in Claude Design, overriding several locked rules across the Today hero, composer, navigation, food log, and Trends."
 status: stable
-tags: [today, design, composer, navigation, trends, globe, food-log, handoff]
+tags: [today, design, composer, navigation, trends, globe, food-log, handoff, era-v4]
 created: 2026-06-22T00:00:00Z
 updated: 2026-06-22T00:00:00Z
 ---

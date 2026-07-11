@@ -1,10 +1,10 @@
 ---
 type: reference
 id: "ai/multi-provider-ai"
-title: Multi-Provider AI + Retry
+title: "v4 · Multi-Provider AI + Retry"
 description: Reference for the multi-provider LLM client (Apple on-device, Gemini, OpenRouter, GLM), the model fallback chain, retry affordance, and per-card attribution.
 status: superseded
-tags: [ai, providers, foundation-models, fallback, retry]
+tags: [ai, providers, foundation-models, fallback, retry, era-v4]
 created: 2026-06-22T00:00:00Z
 updated: 2026-07-10T00:00:00Z
 ---

@@ -1,10 +1,10 @@
 ---
 type: rule
 id: "navigation/global-swipe"
-title: "Global Swipe — Open/Close Drawer from Anywhere (touch-slop axis decision)"
+title: "v4 · Global Swipe — Open/Close Drawer from Anywhere (touch-slop axis decision)"
 description: "A UIKit touch-slop pan recognizer lets a horizontal swipe anywhere open/close the drawer while one axis per touch is enforced via a scroll-failure requirement."
 status: stable
-tags: [navigation, drawer, gestures, uikit, swipe, ios26]
+tags: [navigation, drawer, gestures, uikit, swipe, ios26, era-v4]
 created: 2026-06-22T00:00:00Z
 updated: 2026-06-22T00:00:00Z
 ---

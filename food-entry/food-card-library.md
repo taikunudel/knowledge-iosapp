@@ -1,10 +1,10 @@
 ---
 type: rule
 id: "food-entry/food-card-library"
-title: "Food Card Library"
+title: "v4 · Food Card Library"
 description: "A user-curated library of AI-generated food cards that can be saved from chat and reused from the chat-bar + menu, each rendered as the same nicely-designed card."
 status: stable
-tags: [food-entry, food-card, library, swiftdata, picker]
+tags: [food-entry, food-card, library, swiftdata, picker, era-v4]
 created: 2026-06-22T00:00:00Z
 updated: 2026-06-22T00:00:00Z
 ---
@@ -62,3 +62,5 @@ Required visual elements on every library entry (browse and picker):
 - **Don't remove "From Library"** from the `+` menu. It is the fourth canonical thing the menu does (after the three image flows: Photo Library, Take Photo, and now From Library).
 - **Don't save the portion-scaled nutrition** to the library. The library card is the canonical base nutrition; portions belong on `FoodEntry`.
 - **Don't change the side-drawer position of "Library"** (currently 5th, between Trends and Settings) without explicit user direction — the drawer order is a locked design.
+
+*Era note: the Library (Past Food) screen still runs this v4 UI; the v5 FINAL REPORT's SAVE TO LIBRARY writes the same `LibraryFoodCard` — see [[caffeine-v5]].*

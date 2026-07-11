@@ -1,10 +1,10 @@
 ---
 type: rule
 id: "today/per-day-completion"
-title: "Per-Day Completion Flag — DEFAULT OFF (inverted 2026-06-21)"
+title: "v4 · Per-Day Completion Flag — DEFAULT OFF (inverted 2026-06-21)"
 description: "Per-day completion is opt-in and default OFF; only completed days get a full-color calorie bar and count in Trends, incomplete days show a dotted bar and are excluded."
 status: stable
-tags: [today, completion, trends, calorie-bar, calendar]
+tags: [today, completion, trends, calorie-bar, calendar, era-v4]
 created: 2026-06-22T00:00:00Z
 updated: 2026-06-22T00:00:00Z
 ---

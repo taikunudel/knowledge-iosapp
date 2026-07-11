@@ -4,7 +4,7 @@ id: "ai/nutrition-verification"
 title: "Nutrition Verification — scientific checkpoints, expandable in the panel"
 description: "What each analysis checkpoint scientifically checks (Atwater energy cross-check, macro component sums, unit conventions, coverage over the full 37-field schema), the reused v4 nutrient schema, and the rule that every checkpoint is clickable to expand its real evidence."
 status: stable
-tags: [ai, nutrition, verification, atwater, macros, micronutrients, checkpoints, science]
+tags: [ai, nutrition, verification, atwater, macros, micronutrients, checkpoints, science, era-v5]
 created: 2026-07-10T00:00:00Z
 updated: 2026-07-10T00:00:00Z
 ---

@@ -105,3 +105,12 @@
   payload/multiplier on log, always-pick meal chips, idempotent SAVE TO LIBRARY of the
   base card) — recorded in caffeine-v5.md. Tests: 95 unit (+13) and 4 UI green, success
   branch live-verified (stepper 1×→1.5×, Dinner chip, checkpoint expansion, save button).
+* 2026-07-11 — Graph legibility via CONTENT ONLY (user: don't touch the MCP or the HTML —
+  the wiki content itself must make graph.html render clearly). 17 historical pages got a
+  "v4 · " title prefix (liveness now reads on the canvas labels + directory) and a shared
+  era-v4 tag (tightens the old constellation); the 4 live canon pages (caffeine-v5, motion,
+  exits, nutrition-verification) share the rare era-v5 tag (6 bonding edges); 8 honest
+  [[caffeine-v5]] era/dependency notes were added to live-relevant pages so the canon page
+  is now the graph's hero (23°, verified via the generator — was the superseded v4 design
+  handoff). Folder indexes re-synced to the new titles. Convention recorded in
+  workflow/graph-legibility.md so future eras follow the same scheme.

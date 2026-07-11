@@ -1,10 +1,10 @@
 ---
 type: rule
 id: "food-entry/composer-attach-tray"
-title: "Chat Bar (Composer) — Attach-Tray Layout (v6)"
+title: "v4 · Chat Bar (Composer) — Attach-Tray Layout (v6)"
 description: "The chat input bar is a single pill whose + opens a glass AttachTray (recent photos + Camera/Photos/Scan/Library), with an accent paperplane send and no voice button."
 status: stable
-tags: [food-entry, composer, chat-bar, attach-tray, photokit, liquid-glass]
+tags: [food-entry, composer, chat-bar, attach-tray, photokit, liquid-glass, era-v4]
 created: 2026-06-22T00:00:00Z
 updated: 2026-06-22T00:00:00Z
 ---

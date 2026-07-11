@@ -1,10 +1,10 @@
 ---
 type: reference
 id: "design-system/accent-palette"
-title: "Accent Palette — MUJI Natural Tones"
+title: "v4 · Accent Palette — MUJI Natural Tones"
 description: "The MUJI-inspired natural accent palette, named color tokens, and the semantic status traffic-light that replace raw green/orange/red."
 status: superseded
-tags: [accent-palette, colors, muji, status-tones, design-tokens]
+tags: [accent-palette, colors, muji, status-tones, design-tokens, era-v4]
 created: 2026-06-22T00:00:00Z
 updated: 2026-07-10T00:00:00Z
 ---

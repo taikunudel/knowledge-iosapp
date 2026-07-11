@@ -30,3 +30,5 @@ simctl io <dev> screenshot .artifacts/design-verify/today.png
 ```
 
 The store **persists across launches**, so the seed's `guard existing.isEmpty` short-circuits on a second seeded launch — `simctl uninstall` first for a clean re-seed. Keep this harness (it's how the design was visually verified); if removed, note it here.
+
+*v5 addition: `-CFSeedDemo` seeds demo entries for the Caffeine home (DEBUG only) — see [[caffeine-v5]].*

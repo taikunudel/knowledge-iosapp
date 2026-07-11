@@ -1,10 +1,10 @@
 ---
 type: guide
 id: today/planet-globe
-title: "Planet Globe — spinnable Mars→Earth calorie hero (worked example)"
+title: "v4 · Planet Globe — spinnable Mars→Earth calorie hero (worked example)"
 description: "How the opt-in 3D 'Planet' calorie globe was built: a freely-spinnable SceneKit sphere whose texture cross-fades Mars→Earth by calorie fraction. Full annotated code, the decisions, the iOS-27 SceneKit shader dead-end, the asset sourcing + licensing, and how it was verified — kept as a reusable successful example."
 status: stable
-tags: [today, globe, scenekit, 3d, animation, assets, worked-example, ios27]
+tags: [today, globe, scenekit, 3d, animation, assets, worked-example, ios27, era-v4]
 created: 2026-06-24T00:00:00Z
 updated: 2026-06-24T00:00:00Z
 sources:

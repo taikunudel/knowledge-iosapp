@@ -11,7 +11,7 @@ session video / HIG page is authoritative.
 * [Design Intuitive Search Experiences (WWDC26)](design-search-experiences.md) - search-field component, per-platform placement, suggestions, filters/tokens, empty states.
 * [What's New in SwiftUI (WWDC26)](whats-new-in-swiftui.md) - automatic Liquid Glass, toolbar control, reorderable containers, swipe actions on any view, the @State macro, @ContentBuilder.
 * [Modernize Your UIKit App (WWDC26)](modernize-uikit-app.md) - scene lifecycle, app adaptivity/resizing, tab-bar/sidebar and navigation-bar APIs, Liquid Glass scroll-edge visuals.
-* [Liquid Glass — the design system](liquid-glass.md) - what it is, how to adopt it, its HIG principles, and the WWDC26 second-iteration refinements.
+* [v4 · Liquid Glass — the design system (iOS 26 → second iteration in iOS 27)](liquid-glass.md) - what it is, how to adopt it, its HIG principles, and the WWDC26 second-iteration refinements.
 * [Human Interface Guidelines — map + iOS 27 deltas](hig-map-and-ios27-deltas.md) - HIG top-level structure plus the specific pages/tools Apple updated for iOS 27.
 * [Apple Design Resources (iOS 27)](design-resources.md) - UI kits, app-icon templates, system fonts, SF Symbols 8, Icon Composer, and their formats/availability.
 

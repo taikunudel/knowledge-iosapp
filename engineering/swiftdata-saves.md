@@ -23,3 +23,5 @@ Sites currently following this rule (all in [Nutritionist/ContentView.swift](Nut
 - `MessageBubble.logFoodEntry(...)` — pre-existing pattern.
 
 **Don't reintroduce `try? modelContext.save()` followed by an unconditional UI mutation.** If you add a new save site, follow the same shape.
+
+*Still load-bearing in v5: the Caffeine home's DONE — LOG IT and SAVE TO LIBRARY follow this pattern — see [[caffeine-v5]].*

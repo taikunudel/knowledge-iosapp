@@ -73,3 +73,5 @@ user preference** (2026-06-16: "the trend should be bar … not … like line") 
 3. **No descriptive takeaway** — only a "goal" chip and raw bars; no headline summary (e.g. average, vs-goal, or trend direction).
 4. **Weak empty state** — a plain "No data available" string instead of a considered `ContentUnavailableView`.
 5. **Glanceability** — the pinned mini chart could carry a one-glance stat (avg / vs goal) per the "match size to function" + "descriptive takeaway" practices.
+
+*Era note: the Trends screen awaits its Caffeine pass — see [[caffeine-v5]] for the current design canon.*

@@ -1,10 +1,10 @@
 ---
 type: rule
 id: "today/food-log-rendering"
-title: "Food Log Rendering — Today Page is Meal-Grouped (Plain)"
+title: "v4 · Food Log Rendering — Today Page is Meal-Grouped (Plain)"
 description: "On the Today page the food log is plain (no card/glass) and grouped into Breakfast/Lunch/Dinner/Snacks sections with PlainDesignFoodRow rows."
 status: stable
-tags: [today, food-log, meals, plain, design]
+tags: [today, food-log, meals, plain, design, era-v4]
 created: 2026-06-22T00:00:00Z
 updated: 2026-06-22T00:00:00Z
 ---

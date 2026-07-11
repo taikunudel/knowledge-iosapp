@@ -23,3 +23,5 @@ totals[key, default: 0] += raw * entry.portionMultiplier   // WRONG — double-c
 ```
 
 If a future feature wants the *base* (unscaled) values, parse the JSON and divide by `portionMultiplier` — but the JSON itself stays scaled by convention.
+
+*Still load-bearing in v5: `CFDayTotals` and the portion stepper's scaled payloads rely on this convention — see [[caffeine-v5]].*

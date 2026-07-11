@@ -1,10 +1,10 @@
 ---
 type: decision
 id: "food-entry/clear-design"
-title: "Clear (No-Blur) Design + Non-Blocking AI Indicator + Model Alignment"
+title: "v4 · Clear (No-Blur) Design + Non-Blocking AI Indicator + Model Alignment"
 description: "All background blur is removed for a clear design, AI thinking is non-blocking with the card only on finish, and the chosen AI model is actually used with a fallback note."
 status: stable
-tags: [food-entry, design, blur, ai-model, foundation-models, ios27]
+tags: [food-entry, design, blur, ai-model, foundation-models, ios27, era-v4]
 created: 2026-06-22T00:00:00Z
 updated: 2026-06-22T00:00:00Z
 ---

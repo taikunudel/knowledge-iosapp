@@ -1,10 +1,10 @@
 ---
 type: guide
 id: "design-system/ios26-design-guide"
-title: "Always Refer to the iOS 26 Design Guide"
+title: "v4 · Always Refer to the iOS 26 Design Guide"
 description: "Consult Apple's iOS 26 / liquid-glass guidance for any UI surface, target the iOS 27 runtime, and use the project's native-glass modifiers without manual borders."
 status: superseded
-tags: [ios26, ios27, liquid-glass, design-guide, accessibility, runtime]
+tags: [ios26, ios27, liquid-glass, design-guide, accessibility, runtime, era-v4]
 created: 2026-06-22T00:00:00Z
 updated: 2026-07-10T00:00:00Z
 ---

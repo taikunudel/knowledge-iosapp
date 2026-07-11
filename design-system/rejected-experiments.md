@@ -30,3 +30,5 @@ A horizontal row-swipe and a horizontal date-swipe on the same rows are ambiguou
 edit, and move stay in the row's ellipsis **Menu** (`PlainDesignFoodRow`). Don't add
 row-level horizontal swipe actions to the food log unless the date-swipe is first moved to a
 different gesture or surface.
+
+*Era-independent: rejections bind in every era, including [[caffeine-v5]].*

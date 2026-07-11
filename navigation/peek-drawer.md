@@ -1,10 +1,10 @@
 ---
 type: rule
 id: "navigation/peek-drawer"
-title: "Navigation — Layered Peek Drawer (DrawerShell), No Tab Bar"
+title: "v4 · Navigation — Layered Peek Drawer (DrawerShell), No Tab Bar"
 description: "Top-level navigation is a layered DrawerShell peek drawer toggled by a liquid-glass hamburger, with no bottom tab bar."
 status: stable
-tags: [navigation, drawer, hamburger, ios26, no-tab-bar]
+tags: [navigation, drawer, hamburger, ios26, no-tab-bar, era-v4]
 created: 2026-06-22T00:00:00Z
 updated: 2026-06-22T00:00:00Z
 ---

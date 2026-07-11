@@ -1,10 +1,10 @@
 ---
 type: decision
 id: "food-entry/food-card-capture"
-title: "Food Card Capture (No Chat Window) + Food-Log Date Swipe + Trend Highlight"
+title: "v4 · Food Card Capture (No Chat Window) + Food-Log Date Swipe + Trend Highlight"
 description: "Sending a food removes the AI chat window in favor of one floating food card, re-enables food-log date swipe, and keeps the trend highlight put when paging weeks."
 status: stable
-tags: [food-entry, food-card, capture, date-swipe, trends, ai-chat]
+tags: [food-entry, food-card, capture, date-swipe, trends, ai-chat, era-v4]
 created: 2026-06-22T00:00:00Z
 updated: 2026-06-22T00:00:00Z
 ---

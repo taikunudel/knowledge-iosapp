@@ -4,7 +4,7 @@ id: "design-system/motion"
 title: "Motion & Transitions — single source of truth"
 description: "The one page for every animation/transition rule: Caffeine motion canon (no bounce, decelerate, instant where movement adds nothing), the curve/duration tokens and their Swift symbols, the live v5 inventory, locked interaction rules and rejections, and the archived v4 motion specs."
 status: stable
-tags: [motion, animation, transition, easing, curves, reduce-motion, caffeine, design-tokens]
+tags: [motion, animation, transition, easing, curves, reduce-motion, caffeine, design-tokens, era-v5]
 created: 2026-07-10T00:00:00Z
 updated: 2026-07-10T00:00:00Z
 ---

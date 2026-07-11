@@ -4,7 +4,7 @@ id: "design-system/exits"
 title: "Exits & Dismissal — every panel has a clear way out"
 description: "The exit rule (no surface may trap the user; every panel/overlay needs a visible, predictable dismissal that states what happens to your input), the per-surface exit table for v5, and the two traps found and fixed in the 2026-07-10 audit."
 status: stable
-tags: [exits, dismissal, close, cancel, navigation, panels, ux]
+tags: [exits, dismissal, close, cancel, navigation, panels, ux, era-v5]
 created: 2026-07-10T00:00:00Z
 updated: 2026-07-10T00:00:00Z
 ---

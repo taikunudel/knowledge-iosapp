@@ -1,10 +1,10 @@
 ---
 type: decision
 id: "navigation/ai-chat-overlay-retired"
-title: "AI Chat Overlay — Native Sheet With Detents (RETIRED 2026-06-20)"
+title: "v4 · AI Chat Overlay — Native Sheet With Detents (RETIRED 2026-06-20)"
 description: "The AI chat sheet overlay was retired on 2026-06-20 when the chat window was removed entirely in favor of a floating food card; this page is kept as history."
 status: stable
-tags: [navigation, ai-chat, retired, superseded, sheet, ios26]
+tags: [navigation, ai-chat, retired, superseded, sheet, ios26, era-v4]
 created: 2026-06-22T00:00:00Z
 updated: 2026-06-22T00:00:00Z
 ---

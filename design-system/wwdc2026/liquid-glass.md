@@ -1,10 +1,10 @@
 ---
 type: guide
 id: design-system/wwdc2026/liquid-glass
-title: "Liquid Glass — the design system (iOS 26 → second iteration in iOS 27)"
+title: "v4 · Liquid Glass — the design system (iOS 26 → second iteration in iOS 27)"
 description: "What Liquid Glass is, how to adopt it, its HIG design principles, and the WWDC26 second-iteration refinements (personalization slider, accessibility adaptation, sidebar/toolbar/icon changes, removal of the old-design opt-out)."
 status: superseded
-tags: [design, liquid-glass, materials, wwdc2026, ios, foundation]
+tags: [design, liquid-glass, materials, wwdc2026, ios, foundation, era-v4]
 created: 2026-06-23T00:00:00Z
 updated: 2026-07-10T00:00:00Z
 resource: "https://developer.apple.com/documentation/technologyoverviews/liquid-glass"

@@ -1,10 +1,10 @@
 ---
 type: rule
 id: "today/drag-to-move"
-title: "Drag-to-Move Food Entries (long-press)"
+title: "v4 · Drag-to-Move Food Entries (long-press)"
 description: "Long-pressing a Today food row lets the user drag it onto another meal section (change meal) or a trend day (change date)."
 status: stable
-tags: [today, food-log, drag-drop, meals, trends]
+tags: [today, food-log, drag-drop, meals, trends, era-v4]
 created: 2026-06-22T00:00:00Z
 updated: 2026-06-22T00:00:00Z
 ---

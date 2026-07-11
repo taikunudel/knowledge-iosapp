@@ -4,7 +4,7 @@ id: "design-system/caffeine-v5"
 title: "Caffeine v5 — the simplism design era (supersedes liquid glass)"
 description: "The 2026-07-10 design pivot: v4.0 archives the liquid-glass app; v5 reimplements it against the Caffeine handoff (AnalyzeHome template) — olive/paper palette, one #FF4A1C accent, bundled grotesk/mono fonts, flat tab bar, anti-glass rules, and the decisions/open items of the first (home-flow) phase."
 status: stable
-tags: [caffeine, simplism, v5, design-era, anti-glass, palette, fonts, tab-bar, composer]
+tags: [caffeine, simplism, v5, design-era, anti-glass, palette, fonts, tab-bar, composer, era-v5]
 created: 2026-07-10T00:00:00Z
 updated: 2026-07-10T00:00:00Z
 ---
