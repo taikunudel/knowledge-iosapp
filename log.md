@@ -73,3 +73,11 @@
   print from the growth edge, and the tab underline now SLIDES via matchedGeometryEffect
   while content stays instant (transaction-nil). Also fixed the flagged CFPulseDot
   Reduce-Motion gap. Verified: 3 UI tests + 71 unit tests green after the changes.
+* 2026-07-10 — Added design-system/exits.md (user: "i do not have a option to close the
+  windows… check if the exit behavior is clear for every panel"): the no-trap exit rule,
+  the per-surface exit table, and the audit that found two traps — the in-flight analysis
+  panel had NO exit, and the FINAL REPORT could only be logged. Fixed both: ✕ CANCEL
+  (top-trailing, restores the draft to the composer) while analyzing, ✕ CLOSE + NOT NOW
+  on results (dismiss without logging — restores v4's "let user decide to add it or no").
+  Guarded by testCancelAnalysisRestoresDraft + a NOT NOW assert in the main flow; all 4
+  UI tests green, ✕ CLOSE stays above the fold on long results.
